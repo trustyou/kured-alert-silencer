@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: alertmanager
+spec:
+  serviceName: "alertmanager"
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      name: alertmanager
+      labels:
+        app: alertmanager
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: chart-testing-worker2
+      containers:
+      - name: alertmanager
+        image: prom/alertmanager:v0.27.0
+        ports:
+        - name: alertmanager
+          containerPort: 9093
+        volumeMounts:
+        - name: alertmanager
+          mountPath: /alertmanager
+      volumes:
+      - name: alertmanager
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  labels:
+    app: alertmanager
+spec:
+  ports:
+  - port: 9093
+    name: alertmanager
+  clusterIP: None
+  selector:
+    app: alertmanager

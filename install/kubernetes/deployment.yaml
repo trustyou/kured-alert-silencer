@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kured-alert-silencer
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: kured-alert-silencer
+    app.kubernetes.io/component: alert-silencer
+    app.kubernetes.io/part-of: kured
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kured-alert-silencer
+      app.kubernetes.io/component: alert-silencer
+      app.kubernetes.io/part-of: kured
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kured-alert-silencer
+        app.kubernetes.io/component: alert-silencer
+        app.kubernetes.io/part-of: kured
+    spec:
+      serviceAccountName: kured-alert-silencer
+      restartPolicy: Always
+      containers:
+        - name: kured-alert-silencer
+          image: ghcr.io/trustyou/kured-alert-silencer:0017409
+          imagePullPolicy: IfNotPresent
+          command:
+            - /usr/bin/kured-alert-silencer
+            - --log-level=debug
+#            - --silence-duration=10m
+#            - --alertmanager-url=http://localhost:9093
