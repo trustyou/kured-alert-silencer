@@ -1,3 +1,8 @@
+FROM golang:1.22.3 AS builder
+
+COPY . .
+RUN make kured-alert-silencer
+
 FROM alpine:3.20.0
 
 RUN apk update --no-cache \
@@ -5,7 +10,6 @@ RUN apk update --no-cache \
   && apk add --no-cache \
     ca-certificates \
     tzdata
-
-COPY ./dist/kured-alert-silencer /usr/bin/kured-alert-silencer
+COPY --from=builder /go/dist/kured-alert-silencer /usr/bin/kured-alert-silencer
 
 ENTRYPOINT ["/usr/bin/kured-alert-silencer"]

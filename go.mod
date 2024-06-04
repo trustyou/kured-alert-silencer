@@ -1,8 +1,6 @@
 module github.com/trustyou/kured-alert-silencer
 
-go 1.22.0
-
-toolchain go1.22.3
+go 1.22.3
 
 require (
 	github.com/aws/smithy-go v1.20.2

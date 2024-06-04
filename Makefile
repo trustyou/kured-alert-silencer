@@ -1,13 +1,13 @@
 .DEFAULT: all
 .PHONY: all clean image minikube-publish manifest test kured-alert-silencer-all
 
-TEMPDIR=./.tmp
-GORELEASER_CMD=$(TEMPDIR)/goreleaser
-DH_ORG=trustyou
-VERSION=$(shell git rev-parse --short HEAD)
-SUDO=$(shell docker info >/dev/null 2>&1 || echo "sudo -E")
-KUBERNETES_VERSION=1.28
-KIND_CLUSTER_NAME=chart-testing
+TEMPDIR = ./.tmp
+GORELEASER_CMD = $(TEMPDIR)/goreleaser
+DH_ORG = trustyou
+VERSION ?= $(shell git rev-parse --short HEAD)
+SUDO = $(shell docker info >/dev/null 2>&1 || echo "sudo -E")
+KUBERNETES_VERSION = 1.28
+KIND_CLUSTER_NAME = chart-testing
 
 all: image
 
@@ -17,8 +17,14 @@ clean:
 kured-alert-silencer:
 	CGO_ENABLED=0 go build -o dist/kured-alert-silencer cmd/kured-alert-silencer/main.go
 
-image: kured-alert-silencer
-	$(SUDO) docker buildx build --load -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
+image:
+	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
+		--load -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
+
+push-images: DOCKER_EXTRA_ARGS ?= --platform linux/amd64,linux/arm64
+push-images:
+	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
+		--push -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
 manifest:
 	sed -i "s#image: ghcr.io/.*kured-alert-silencer.*#image: ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION)#g" \

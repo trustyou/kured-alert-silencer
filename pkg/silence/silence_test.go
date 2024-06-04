@@ -28,7 +28,6 @@ func mockAlertmanagerServer(existingSilences []*models.GettableSilence) *httptes
 	return httptest.NewServer(handler)
 }
 
-// TODO: check that matcher is well formed
 func TestGenerateMatchers(t *testing.T) {
 	validJSON := `[{"name": "instance", "value": "{{.NodeName}}", "isRegex": false}, {"name": "alertname", "value": "node_reboot", "isRegex": false}]`
 	invalidJSON := `[{name: "instance", "value": "{{.NodeName}}", "isRegex": false}]`
