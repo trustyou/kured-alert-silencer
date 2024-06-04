@@ -1,23 +1,23 @@
-name: PR
+name: Tests
 on:
   pull_request:
   push:
 
 jobs:
-  pr-lint-code:
+  lint:
     name: Lint golang code
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Ensure go version
-      uses: actions/setup-go@v5
-      with:
-        go-version-file: 'go.mod'
-        check-latest: true
-    - name: Setup GoReleaser
-      run: make lint
+      - uses: actions/checkout@v4
+      - name: Ensure go version
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          check-latest: true
+      - name: Setup GoReleaser
+        run: make lint
 
-  pr-gotest:
+  unit-tests:
     name: Run go tests
     runs-on: ubuntu-latest
     steps:
@@ -36,13 +36,13 @@ jobs:
         with:
           test-results: test.json
 
-  pr-shellcheck:
+  shellcheck:
     name: Lint bash code with shellcheck
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Run ShellCheck
-      uses: bewuethr/shellcheck-action@v2
+      - uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: bewuethr/shellcheck-action@v2
 
   # This ensures the latest code works with the manifests built from tree.
   # It is useful for two things:
@@ -58,10 +58,10 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { kubernetes: "1.28", concurrency: 1}
-          - { kubernetes: "1.29", concurrency: 1}
-          - { kubernetes: "1.28", concurrency: 2}
-          - { kubernetes: "1.29", concurrency: 2}
+          - {kubernetes: "1.28", concurrency: 1}
+          - {kubernetes: "1.29", concurrency: 1}
+          - {kubernetes: "1.28", concurrency: 2}
+          - {kubernetes: "1.29", concurrency: 2}
     steps:
       - uses: actions/checkout@v4
       - name: Ensure go version

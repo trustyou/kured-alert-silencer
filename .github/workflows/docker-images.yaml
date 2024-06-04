@@ -1,0 +1,59 @@
+---
+name: release images
+
+on:
+  push:
+    branches:
+      - main
+
+    tags:
+      - v*
+
+  pull_request:
+
+jobs:
+  push:
+    needs: test
+
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'push'
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure go version
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          check-latest: true
+
+      - name: Install UPX
+        uses: crazy-max/ghaction-upx@v3
+        with:
+          install-only: true
+          version: latest
+
+      - name: Build image
+        run: |
+          make image
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx for multiarch images
+        uses: docker/setup-buildx-action@v3
+
+      - name: Push image
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "main" ] && VERSION=latest
+
+          VERSION=$VERSION make push-images
