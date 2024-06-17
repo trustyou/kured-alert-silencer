@@ -36,7 +36,7 @@ trap gather_logs_and_cleanup EXIT
 
 declare -A was_unschedulable
 declare -A has_recovered
-max_attempts="60"
+max_attempts="20"
 sleep_time=60
 attempt_num=1
 
