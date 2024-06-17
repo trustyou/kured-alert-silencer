@@ -1,5 +1,4 @@
 .DEFAULT: all
-.PHONY: all clean image minikube-publish manifest test kured-alert-silencer-all
 
 TEMPDIR = ./.tmp
 GORELEASER_CMD = $(TEMPDIR)/goreleaser
@@ -9,11 +8,14 @@ SUDO = $(shell docker info >/dev/null 2>&1 || echo "sudo -E")
 KUBERNETES_VERSION = 1.28
 KIND_CLUSTER_NAME = chart-testing
 
+.PHONY: all
 all: image
 
+.PHONY: clean
 clean:
 	rm -rf ./dist
 
+.PHONY: kured-alert-silencer
 kured-alert-silencer:
 	CGO_ENABLED=0 go build -ldflags \
 		"-X github.com/prometheus/common/version.Version=$(VERSION) \
@@ -23,15 +25,18 @@ kured-alert-silencer:
 		-X github.com/prometheus/common/version.BuildDate=$(shell date +%Y-%m-%dT%H:%M:%SZ)" \
 		-o dist/kured-alert-silencer cmd/kured-alert-silencer/main.go
 
+.PHONY: image
 image:
 	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
 		--load -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
+.PHONY: push-images
 push-images: DOCKER_EXTRA_ARGS ?= --platform linux/amd64,linux/arm64
 push-images:
 	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
 		--push -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
+.PHONY: manifest
 manifest:
 	sed -i "s#image: ghcr.io/.*kured-alert-silencer.*#image: ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION)#g" \
 		install/kubernetes/deployment.yaml
@@ -40,16 +45,19 @@ manifest:
 	sed -i 's|#\(.*\)--alertmanager-url=http://localhost:9093|\1--alertmanager-url=http://alertmanager.default:9093|g' \
 		install/kubernetes/deployment.yaml
 
+.PHONY: lint
 lint:
 	echo "Running linter on pkg"
 	go vet ./pkg/...
 	echo "Running linter on cmd"
 	go vet ./cmd/...
 
+.PHONY: test
 test: lint
 	echo "Running go tests"
 	go test ./...
 
+.PHONY: kind
 e2e: image manifest
 	kind create cluster --name $(KIND_CLUSTER_NAME) --config .github/kind-cluster-$(KUBERNETES_VERSION).yaml
 	helm repo add kubereboot https://kubereboot.github.io/charts
@@ -73,5 +81,15 @@ e2e: image manifest
 	./test/kind/follow-coordinated-reboot.sh
 	./test/kind/check-silences.sh
 
+.PHONY: delete-kind
 delete-kind:
 	kind delete cluster --name $(KIND_CLUSTER_NAME)
+
+.PHONY: update-changelog
+update-changelog:
+	git cliff -t v$(VERSION) -u -p CHANGELOG.md
+
+.PHONY: tag
+tag:
+	git tag -s v$(VERSION) -m "v$(VERSION)" && \
+	git push origin v$(VERSION)
