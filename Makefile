@@ -15,7 +15,13 @@ clean:
 	rm -rf ./dist
 
 kured-alert-silencer:
-	CGO_ENABLED=0 go build -o dist/kured-alert-silencer cmd/kured-alert-silencer/main.go
+	CGO_ENABLED=0 go build -ldflags \
+		"-X github.com/prometheus/common/version.Version=$(VERSION) \
+		-X github.com/prometheus/common/version.Branch=$(shell git rev-parse --abbrev-ref HEAD) \
+		-X github.com/prometheus/common/version.Revision=$(shell git rev-parse --short HEAD) \
+		-X github.com/prometheus/common/version.BuildUser=$(shell whoami)@$(shell hostname) \
+		-X github.com/prometheus/common/version.BuildDate=$(shell date +%Y-%m-%dT%H:%M:%SZ)" \
+		-o dist/kured-alert-silencer cmd/kured-alert-silencer/main.go
 
 image:
 	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \

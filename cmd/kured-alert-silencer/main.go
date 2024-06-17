@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 
+	"github.com/prometheus/common/version"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -22,8 +24,6 @@ import (
 )
 
 var (
-	version = "unreleased"
-
 	// Command line flags
 	dsName              string
 	dsNamespace         string
@@ -33,6 +33,7 @@ var (
 	alertmanagerURL     string
 	silenceDuration     string
 	silenceMatchersJSON string
+	showVersion         bool
 )
 
 const (
@@ -81,7 +82,8 @@ func NewRootCommand() *cobra.Command {
 		Use:               "kured-alert-silencer",
 		Short:             "An opinionated way of silencing alerts while Kured reboot k8s nodes.",
 		PersistentPreRunE: bindViper,
-		Run:               root}
+		Run:               root,
+	}
 
 	rootCmd.PersistentFlags().StringVar(&dsNamespace, "ds-namespace", "kube-system",
 		"namespace containing daemonset on which Kured place the lock")
@@ -102,6 +104,7 @@ func NewRootCommand() *cobra.Command {
 		"silence-matchers-json",
 		`[{"name": "instance", "value": "{{.NodeName}}", "isRegex": false}]`,
 		`JSON string with format [{"name": "instance", "value": "{{.NodeName}}", "isRegex": false}, {"name": "alertname", "value": "node_reboot", "isRegex": false}]`)
+	rootCmd.PersistentFlags().BoolVar(&showVersion, "version", false, "Show version and exit")
 	return rootCmd
 }
 
@@ -114,6 +117,11 @@ func main() {
 }
 
 func root(cmd *cobra.Command, args []string) {
+	if showVersion {
+		fmt.Print(version.Print("kured-alert-silencer"))
+		os.Exit(0)
+	}
+
 	level, err := log.ParseLevel(logLevel)
 	if err != nil {
 		log.Fatal(err)
