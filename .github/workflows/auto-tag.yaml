@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get last changelog version
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          path: ./CHANGELOG.md
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          version=${{ steps.changelog_reader.outputs.version }}
+          if git rev-parse "v$version" >/dev/null 2>&1; then
+            echo "Tag already exists"
+            echo "::set-output name=tag_exists::true"
+          else
+            echo "Tag does not exist"
+            echo "::set-output name=tag_exists::false"
+          fi
+
+      - name: Create new tag
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        run: |
+          version=${{ steps.get_version.outputs.version }}
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag "v$version"
+          git push origin "v$version"
