@@ -90,8 +90,3 @@ delete-kind:
 .PHONY: update-changelog
 update-changelog:
 	git cliff -t v$(VERSION) -u -p CHANGELOG.md
-
-.PHONY: tag
-tag:
-	git tag -s v$(VERSION) -m "v$(VERSION)" && \
-	git push origin v$(VERSION)
