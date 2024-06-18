@@ -28,12 +28,14 @@ kured-alert-silencer:
 .PHONY: image
 image:
 	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
+		--build-arg VERSION=$(VERSION) \
 		--load -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
 .PHONY: push-images
 push-images: DOCKER_EXTRA_ARGS ?= --platform linux/amd64,linux/arm64
 push-images:
 	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
+		--build-arg VERSION=$(VERSION) \
 		--push -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
 .PHONY: manifest

@@ -1,7 +1,9 @@
 FROM golang:1.22.4 AS builder
 
+ARG VERSION
+
 COPY . .
-RUN make kured-alert-silencer
+RUN VERSION=${VERSION} make kured-alert-silencer
 
 FROM alpine:3.20.0
 
