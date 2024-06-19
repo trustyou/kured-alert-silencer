@@ -57,6 +57,11 @@ jobs:
           version: v${{ env.VERSION }}
           path: ./CHANGELOG.md
 
+      - name: Create manifests
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION=${{ env.VERSION }} make manifest
+
       - name: Publish
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -64,5 +69,8 @@ jobs:
           body: ${{ steps.changelog_reader.outputs.changes }}
           prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
           draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
+          files: |
+            install/kubernetes/deployment.yaml
+            install/kubernetes/rbac.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
