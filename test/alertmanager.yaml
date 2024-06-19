@@ -16,17 +16,17 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: chart-testing-worker2
       containers:
-      - name: alertmanager
-        image: prom/alertmanager:v0.27.0
-        ports:
         - name: alertmanager
-          containerPort: 9093
-        volumeMounts:
-        - name: alertmanager
-          mountPath: /alertmanager
+          image: prom/alertmanager:v0.27.0
+          ports:
+            - name: alertmanager
+              containerPort: 9093
+          volumeMounts:
+            - name: alertmanager
+              mountPath: /alertmanager
       volumes:
-      - name: alertmanager
-        emptyDir: {}
+        - name: alertmanager
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -36,8 +36,8 @@ metadata:
     app: alertmanager
 spec:
   ports:
-  - port: 9093
-    name: alertmanager
+    - port: 9093
+      name: alertmanager
   clusterIP: None
   selector:
     app: alertmanager
