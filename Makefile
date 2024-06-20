@@ -47,8 +47,13 @@ manifest:
 	sed -i 's|#\(.*\)--alertmanager-url=http://localhost:9093|\1--alertmanager-url=http://alertmanager.default:9093|g' \
 		install/kubernetes/deployment.yaml
 
+.PHONY: format
+format:
+	echo "Format source code"
+	go fmt ./...
+
 .PHONY: lint
-lint:
+lint: format
 	echo "Running linter on pkg"
 	go vet ./pkg/...
 	echo "Running linter on cmd"
