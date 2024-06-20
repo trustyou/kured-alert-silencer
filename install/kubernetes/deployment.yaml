@@ -26,6 +26,18 @@ spec:
       containers:
         - name: kured-alert-silencer
           image: ghcr.io/trustyou/kured-alert-silencer:0017409
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65534
           imagePullPolicy: IfNotPresent
           command:
             - /usr/bin/kured-alert-silencer
