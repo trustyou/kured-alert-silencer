@@ -22,6 +22,12 @@ jobs:
         run: test -z $(go fmt ./...)
       - name: lint
         run: make lint
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit
+          pre-commit install
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files
 
   unit-tests:
     name: Run go tests
