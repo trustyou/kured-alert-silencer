@@ -34,10 +34,10 @@ func TestGenerateMatchers(t *testing.T) {
 	missingFieldsJSON := `[{"name": "instance", "value": "{{.NodeName}}"}`
 
 	tests := []struct {
-		name       string
-		jsonInput  string
-		nodeName   string
-		expectErr  bool
+		name      string
+		jsonInput string
+		nodeName  string
+		expectErr bool
 	}{
 		{"Valid JSON", validJSON, "node1", false},
 		{"Invalid JSON", invalidJSON, "node1", true},
@@ -62,9 +62,9 @@ func TestGenerateMatchers(t *testing.T) {
 
 func TestNewAlertmanagerClient(t *testing.T) {
 	tests := []struct {
-		name           string
+		name            string
 		alertmanagerURL string
-		expectErr      bool
+		expectErr       bool
 	}{
 		{"Valid URL", "http://localhost:9093", false},
 		{"Invalid URL", ":", true},
@@ -158,11 +158,11 @@ func TestSilenceAlerts(t *testing.T) {
 	invalidMatchersJSON := `[{name: "instance", "value": "{{.NodeName}}", "isRegex": false}]`
 
 	tests := []struct {
-		name          string
-		matchersJSON  string
-		nodeName      string
-		alertTTL      string
-		expectErr     bool
+		name         string
+		matchersJSON string
+		nodeName     string
+		alertTTL     string
+		expectErr    bool
 	}{
 		{"Valid Silence", validMatchersJSON, "node1", "1h", false},
 		{"Invalid Matchers JSON", invalidMatchersJSON, "node1", "1h", true},

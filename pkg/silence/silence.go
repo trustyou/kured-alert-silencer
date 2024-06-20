@@ -19,26 +19,26 @@ import (
 
 // generate models.Matcher form JSON string with format `[{"name": "instance", "value": "{{.NodeName}}"}, {"name": "alertname", "value": "node_reboot"}]`
 func generateMatchers(matchersJSON string, nodeName string) ([]*models.Matcher, error) {
-    tmpl, err := template.New("matchers").Parse(matchersJSON)
-    if err != nil {
-        return nil, err
-    }
+	tmpl, err := template.New("matchers").Parse(matchersJSON)
+	if err != nil {
+		return nil, err
+	}
 
-    data := map[string]string{
-        "NodeName": nodeName,
-    }
+	data := map[string]string{
+		"NodeName": nodeName,
+	}
 
-    var tpl bytes.Buffer
-    if err := tmpl.Execute(&tpl, data); err != nil {
-        return nil, err
-    }
+	var tpl bytes.Buffer
+	if err := tmpl.Execute(&tpl, data); err != nil {
+		return nil, err
+	}
 
-    var matchers []*models.Matcher
+	var matchers []*models.Matcher
 	log.Debugf("rendered matchers: %s", tpl.String())
-    err = json.Unmarshal(tpl.Bytes(), &matchers)
-    if err != nil {
-        return nil, err
-    }
+	err = json.Unmarshal(tpl.Bytes(), &matchers)
+	if err != nil {
+		return nil, err
+	}
 
 	// check that matchers contain required fields
 	for _, matcher := range matchers {
@@ -47,7 +47,7 @@ func generateMatchers(matchersJSON string, nodeName string) ([]*models.Matcher, 
 		}
 	}
 
-    return matchers, nil
+	return matchers, nil
 }
 
 // create client.AlertmanagerAPI from alertmanagerURL
@@ -83,7 +83,7 @@ func silenceExists(alertmanager *client.AlertmanagerAPI, matcher *models.Matcher
 
 // SilenceAlerts silences alerts in Alertmanager
 func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, nodeName string, alertTTL string) error {
-    startsAt := time.Now()
+	startsAt := time.Now()
 	alertTTLtime, err := time.ParseDuration(alertTTL)
 	if err != nil {
 		return err
@@ -112,7 +112,7 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 		postSilenceParams := silence.NewPostSilencesParams().WithSilence(
 			&models.PostableSilence{
 				Silence: models.Silence{
-					Matchers: []*models.Matcher{matcher},
+					Matchers:  []*models.Matcher{matcher},
 					StartsAt:  (*strfmt.DateTime)(&startsAt),
 					EndsAt:    (*strfmt.DateTime)(&endsAt),
 					CreatedBy: ptr.String("kured-alert-silencer"),

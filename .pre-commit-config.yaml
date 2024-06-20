@@ -34,6 +34,13 @@ repos:
         name: go-lint
         stages: [commit]
         language: system
+        entry: make format
+        pass_filenames: false
+
+      - id: go-lint
+        name: go-lint
+        stages: [commit]
+        language: system
         entry: make lint
         pass_filenames: false
 
