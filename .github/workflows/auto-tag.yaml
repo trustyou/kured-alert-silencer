@@ -21,29 +21,28 @@ jobs:
           path: ./CHANGELOG.md
 
       - name: Check if tag exists
-        id: check_tag
         run: |
-          version=${{ steps.changelog_reader.outputs.version }}
-          if git rev-parse "$version" >/dev/null 2>&1; then
+          tag=v${{ steps.changelog_reader.outputs.version }}
+          if git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
             echo "Tag already exists"
-            echo "::set-output name=tag_exists::true"
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
           else
             echo "Tag does not exist"
-            echo "::set-output name=tag_exists::false"
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
       - name: Import GPG key
-        if: steps.check_tag.outputs.tag_exists == 'false'
+        if: env.TAG_EXISTS == 'false'
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
 
       - name: Create new tag
-        if: steps.check_tag.outputs.tag_exists == 'false'
+        if: env.TAG_EXISTS == 'false'
         run: |
-          version=${{ steps.changelog_reader.outputs.version }}
+          tag=v${{ steps.changelog_reader.outputs.version }}
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag -s "$version" -m "$version" --local-user $(gpg --list-keys --with-colons | grep '^pub' | cut -d':' -f5)
-          git push origin "$version"
+          git tag -s "$tag" -m "$tag" --local-user $(gpg --list-keys --with-colons | grep '^pub' | cut -d':' -f5)
+          git push origin "$tag"

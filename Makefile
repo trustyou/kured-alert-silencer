@@ -89,4 +89,4 @@ delete-kind:
 
 .PHONY: update-changelog
 update-changelog:
-	git cliff -t v$(VERSION) -u -p CHANGELOG.md
+	git cliff -t $(VERSION) -u -p CHANGELOG.md
