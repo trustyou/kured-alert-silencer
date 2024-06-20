@@ -16,9 +16,11 @@ jobs:
       - name: Ensure go version
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           check-latest: true
-      - name: Setup GoReleaser
+      - name: fmt check
+        run: test -z $(go fmt ./...)
+      - name: lint
         run: make lint
 
   unit-tests:
@@ -30,7 +32,7 @@ jobs:
       - name: Ensure go version
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           check-latest: true
       - name: run tests
         run: go test -json ./... > test.json
@@ -62,16 +64,16 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - {kubernetes: "1.28", concurrency: 1}
-          - {kubernetes: "1.29", concurrency: 1}
-          - {kubernetes: "1.28", concurrency: 2}
-          - {kubernetes: "1.29", concurrency: 2}
+          - { kubernetes: "1.28", concurrency: 1 }
+          - { kubernetes: "1.29", concurrency: 1 }
+          - { kubernetes: "1.28", concurrency: 2 }
+          - { kubernetes: "1.29", concurrency: 2 }
     steps:
       - uses: actions/checkout@v4
       - name: Ensure go version
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           check-latest: true
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
