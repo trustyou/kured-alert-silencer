@@ -5,7 +5,7 @@ ARG VERSION
 COPY . .
 RUN VERSION=${VERSION} make kured-alert-silencer
 
-FROM alpine:3.20.0
+FROM alpine:3.20.1
 
 RUN apk update --no-cache \
   && apk upgrade --no-cache \
