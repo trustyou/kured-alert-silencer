@@ -3,7 +3,7 @@ module github.com/trustyou/kured-alert-silencer
 go 1.22.3
 
 require (
-	github.com/aws/smithy-go v1.20.3
+	github.com/aws/smithy-go v1.20.4
 	github.com/go-openapi/strfmt v0.23.0
 	github.com/prometheus/alertmanager v0.27.0
 	github.com/prometheus/common v0.55.0
