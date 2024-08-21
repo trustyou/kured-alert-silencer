@@ -82,13 +82,9 @@ func silenceExists(alertmanager *client.AlertmanagerAPI, matcher *models.Matcher
 }
 
 // SilenceAlerts silences alerts in Alertmanager
-func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, nodeName string, alertTTL string) error {
-	startsAt := time.Now()
-	alertTTLtime, err := time.ParseDuration(alertTTL)
-	if err != nil {
-		return err
-	}
-	endsAt := startsAt.Add(alertTTLtime)
+func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, nodeName string, alertEnd time.Time) error {
+	startsAt := (*strfmt.DateTime)(ptr.Time(time.Now()))
+	endsAt := (*strfmt.DateTime)(ptr.Time(alertEnd))
 
 	matchers, err := generateMatchers(matchersJSON, nodeName)
 	if err != nil {
@@ -125,8 +121,8 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 			&models.PostableSilence{
 				Silence: models.Silence{
 					Matchers:  []*models.Matcher{matcher},
-					StartsAt:  (*strfmt.DateTime)(&startsAt),
-					EndsAt:    (*strfmt.DateTime)(&endsAt),
+					StartsAt:  startsAt,
+					EndsAt:    endsAt,
 					CreatedBy: ptr.String("kured-alert-silencer"),
 					Comment:   ptr.String("Silencing during node reboot"),
 				},

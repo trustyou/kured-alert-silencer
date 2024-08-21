@@ -161,18 +161,17 @@ func TestSilenceAlerts(t *testing.T) {
 		name         string
 		matchersJSON string
 		nodeName     string
-		alertTTL     string
+		alertEnd     time.Time
 		expectErr    bool
 	}{
-		{"Valid Silence", validMatchersJSON, "node1", "1h", false},
-		{"Invalid Matchers JSON", invalidMatchersJSON, "node1", "1h", true},
-		{"Invalid Alert TTL", validMatchersJSON, "node1", "invalid_duration", true},
-		{"Existing Silence", validMatchersJSON, "node1", "1h", false},
+		{"Valid Silence", validMatchersJSON, "node1", time.Date(2024, time.May, 31, 0, 0, 0, 0, time.UTC), false},
+		{"Invalid Matchers JSON", invalidMatchersJSON, "node1", time.Date(2024, time.May, 31, 0, 0, 0, 0, time.UTC), true},
+		{"Existing Silence", validMatchersJSON, "node1", time.Date(2024, time.May, 31, 0, 0, 0, 0, time.UTC), false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := SilenceAlerts(alertmanager, tt.matchersJSON, tt.nodeName, tt.alertTTL)
+			err := SilenceAlerts(alertmanager, tt.matchersJSON, tt.nodeName, tt.alertEnd)
 			if tt.expectErr {
 				assert.Error(t, err)
 			} else {
