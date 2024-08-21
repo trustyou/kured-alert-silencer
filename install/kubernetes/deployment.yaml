@@ -44,3 +44,7 @@ spec:
             - --log-level=debug
 #            - --silence-duration=10m
 #            - --alertmanager-url=http://localhost:9093
+#            - >-
+#              --silence-matchers-json=[{"name": "instance", "value": "{{.NodeName}}","isRegex": false},
+#              {"name": "alertname", "value": "Foo", "isRegex": false}
+#              ]
