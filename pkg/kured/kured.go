@@ -21,11 +21,19 @@ type multiLockAnnotationValue struct {
 	LockAnnotations []lockAnnotationValue `json:"locks"`
 }
 
-func ExtractNodeIDsFromAnnotation(ds *v1.DaemonSet, annotation string) ([]string, error) {
-	nodeIDs := []string{}
+type SilenceNode struct {
+	NodeID     string
+	SilenceEnd time.Time
+}
+
+type TimeProvider func() time.Time
+
+func ExtractNodeIDsFromAnnotation(ds *v1.DaemonSet, annotation string, silenceDuration time.Duration, nowProvider TimeProvider) ([]SilenceNode, error) {
+	now := nowProvider()
+	silencerArray := []SilenceNode{}
 
 	if _, ok := ds.Annotations[annotation]; !ok {
-		return []string{}, nil
+		return silencerArray, nil
 	}
 
 	multiLock := &multiLockAnnotationValue{}
@@ -35,11 +43,18 @@ func ExtractNodeIDsFromAnnotation(ds *v1.DaemonSet, annotation string) ([]string
 	}
 
 	for _, lock := range multiLock.LockAnnotations {
-		nodeIDs = append(nodeIDs, lock.NodeID)
+		// TODO: silence just for silenceEnd.Sub(now) duration
+		silenceEnd := lock.Created.Add(silenceDuration)
+		if silenceEnd.After(now) {
+			silencerArray = append(silencerArray, SilenceNode{
+				NodeID:     lock.NodeID,
+				SilenceEnd: silenceEnd,
+			})
+		}
 	}
 
-	if len(nodeIDs) > 0 {
-		return nodeIDs, nil
+	if len(silencerArray) > 0 {
+		return silencerArray, nil
 	}
 
 	singleLock := &lockAnnotationValue{}
@@ -48,9 +63,17 @@ func ExtractNodeIDsFromAnnotation(ds *v1.DaemonSet, annotation string) ([]string
 		return nil, err
 	}
 
-	nodeIDs = append(nodeIDs, singleLock.NodeID)
-	if nodeIDs[0] != "manual" {
-		return nodeIDs, nil
+	if singleLock.NodeID != "manual" {
+		// TODO: silence just for silenceEnd.Sub(now) duration
+		silenceEnd := singleLock.Created.Add(silenceDuration)
+		if silenceEnd.After(now) {
+			silencerArray = append(silencerArray, SilenceNode{
+				NodeID:     singleLock.NodeID,
+				SilenceEnd: silenceEnd,
+			})
+		}
+		return silencerArray, nil
+	} else {
+		return silencerArray, nil
 	}
-	return []string{}, nil
 }

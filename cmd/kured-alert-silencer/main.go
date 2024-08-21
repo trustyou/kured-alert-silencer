@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/prometheus/common/version"
 	log "github.com/sirupsen/logrus"
@@ -153,6 +154,16 @@ func root(cmd *cobra.Command, args []string) {
 	log.Infof("silence matchers JSON: %s", silenceMatchersJSON)
 
 	log.Info("Watching DaemonSet")
+
+	silenceDurationtime, err := time.ParseDuration(silenceDuration)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	nowProvider := func() time.Time {
+		return time.Now()
+	}
+
 	watcher, err := client.AppsV1().DaemonSets(dsNamespace).Watch(ctx, metav1.ListOptions{
 		FieldSelector: fields.OneTermEqualSelector("metadata.name", dsName).String(),
 	})
@@ -172,15 +183,16 @@ func root(cmd *cobra.Command, args []string) {
 		for event := range watcher.ResultChan() {
 			switch event.Type {
 			case watch.Added, watch.Modified:
+
 				ds := event.Object.(*v1.DaemonSet)
-				nodeIDs, err := kured.ExtractNodeIDsFromAnnotation(ds, lockAnnotation)
+				silencerArray, err := kured.ExtractNodeIDsFromAnnotation(ds, lockAnnotation, silenceDurationtime, nowProvider)
 				if err != nil {
 					log.Fatal(err)
 				}
 
-				for _, nodeID := range nodeIDs {
-					log.Infof("Silencing alerts for node %s", nodeID)
-					err = silence.SilenceAlerts(alertmanager, silenceMatchersJSON, nodeID, silenceDuration)
+				for _, silenceNode := range silencerArray {
+					log.Infof("Silencing alerts for node %s", silenceNode.NodeID)
+					err = silence.SilenceAlerts(alertmanager, silenceMatchersJSON, silenceNode.NodeID, silenceNode.SilenceEnd)
 					if err != nil {
 						log.Fatal(err)
 					}
