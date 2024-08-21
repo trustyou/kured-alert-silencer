@@ -97,7 +97,19 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 	log.Infof("Silencing alerts with matchers: %v", len(matchers))
 
 	for _, matcher := range matchers {
-		log.Debugf("matcher: %+v", *matcher)
+		log.Debugf(
+			"matcher: %sIsRegex: %t, Name: %s, Value: %s",
+			func(b *bool) interface{} {
+				if b == nil {
+					return ""
+				} else {
+					return fmt.Sprintf("IsEqual: %t, ", *b)
+				}
+			}(matcher.IsEqual),
+			*matcher.IsRegex,
+			*matcher.Name,
+			*matcher.Value,
+		)
 
 		exists, err := silenceExists(alertmanager, matcher)
 		if err != nil {
