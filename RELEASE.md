@@ -1,5 +1,5 @@
 # Release workflow
 
-- Update `CHANGELOG.md` with `VERSION=X.Y.Z make update-changelog`
-- Merge PR
-- Tag version is automatically done
+```bash
+.ci/release.sh vX.Y.Z
+```
