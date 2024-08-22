@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.3](https://github.com/trustyou/kured-alert-silencer/tree/0.0.3) - 2024-08-22
+
+### Fixed
+
+- Use TTL from Kured to update silences
+
+### Documentation
+
+- Add resources and security context to deployment yaml
+
+### Build
+
+- deps: Update alpine Docker tag to v3.20.1
+- deps: Update module github.com/prometheus/common to v0.55.0
+- deps: Update module github.com/aws/smithy-go to v1.20.3
+- deps: Update actions/setup-go action to v4
+- deps: Update golang Docker tag to v1.22.5
+- deps: Update kubernetes packages to v0.30.3
+- deps: Update alpine Docker tag to v3.20.2
+- deps: Update golang Docker tag to v1.22.6
+- deps: Update module github.com/aws/smithy-go to v1.20.4
+
+### Styling
+
+- Fix go code with go fmt
+- Fix YAML spaces on brackets
+
+### Ci
+
+- Fix auto-tag workflow when not tag needed
+- Add and fix pre-commit checks to ensure formating
+- Fix pre-commit gofmt checker
+- Update cliff template to order groups
+
 ## [0.0.2](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.2) - 2024-06-19
 
 ### Build
