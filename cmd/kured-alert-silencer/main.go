@@ -149,9 +149,9 @@ func root(cmd *cobra.Command, args []string) {
 
 	log.Infof("Kured daemon set namespace: %s", dsNamespace)
 	log.Infof("Kured daemon set name: %s", dsName)
-	log.Infof("lock annotation: %s", lockAnnotation)
-	log.Infof("silence duration: %s", silenceDuration)
-	log.Infof("silence matchers JSON: %s", silenceMatchersJSON)
+	log.Infof("Lock annotation: %s", lockAnnotation)
+	log.Infof("Silence duration: %s", silenceDuration)
+	log.Infof("Silence matchers JSON: %s", silenceMatchersJSON)
 
 	log.Info("Watching DaemonSet")
 

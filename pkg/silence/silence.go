@@ -90,7 +90,7 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 	if err != nil {
 		return err
 	}
-	log.Infof("Silencing alerts with matchers: %v", len(matchers))
+	log.Infof("Silencing %v alerts with matchers", len(matchers))
 
 	for _, matcher := range matchers {
 		log.Debugf(
