@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.0.5](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.5) - 2024-09-17
+
+### Fixed
+
+- Info log messages format
+- Keep main process running on watcher ends or error
+
+### Build
+
+- deps: Update module github.com/prometheus/common to v0.58.0
+- deps: Update wagoid/commitlint-github-action action to v6.1.2
+- deps: Update module github.com/prometheus/common to v0.59.0
+- deps: Update module github.com/prometheus/common to v0.59.1
+- deps: Update golang Docker tag to v1.23.1
+- deps: Update alpine Docker tag to v3.20.3
+- deps: Update kubernetes packages to v0.31.1
+
 ## [v0.0.4](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.4) - 2024-08-22
 
 ### Documentation
