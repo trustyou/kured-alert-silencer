@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/prometheus/common/version"
@@ -141,7 +140,6 @@ func root(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	// Create a new clientset which includes our clientset scheme
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		log.Fatal(err)
@@ -153,8 +151,6 @@ func root(cmd *cobra.Command, args []string) {
 	log.Infof("Silence duration: %s", silenceDuration)
 	log.Infof("Silence matchers JSON: %s", silenceMatchersJSON)
 
-	log.Info("Watching DaemonSet")
-
 	silenceDurationtime, err := time.ParseDuration(silenceDuration)
 	if err != nil {
 		log.Fatal(err)
@@ -164,47 +160,50 @@ func root(cmd *cobra.Command, args []string) {
 		return time.Now()
 	}
 
-	watcher, err := client.AppsV1().DaemonSets(dsNamespace).Watch(ctx, metav1.ListOptions{
-		FieldSelector: fields.OneTermEqualSelector("metadata.name", dsName).String(),
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	// Process events
 	go func() {
-		alertmanager, err := silence.NewAlertmanagerClient(alertmanagerURL)
-		if err != nil {
-			log.Fatal(err)
-		}
-		for event := range watcher.ResultChan() {
-			switch event.Type {
-			case watch.Added, watch.Modified:
+		for {
+			log.Info("Watching DaemonSet")
 
-				ds := event.Object.(*v1.DaemonSet)
-				silencerArray, err := kured.ExtractNodeIDsFromAnnotation(ds, lockAnnotation, silenceDurationtime, nowProvider)
-				if err != nil {
-					log.Fatal(err)
-				}
+			watcher, err := client.AppsV1().DaemonSets(dsNamespace).Watch(ctx, metav1.ListOptions{
+				FieldSelector: fields.OneTermEqualSelector("metadata.name", dsName).String(),
+			})
+			if err != nil {
+				log.WithError(err).Error("Failed to create DaemonSet watcher, retrying...")
+				time.Sleep(5 * time.Second)
+				continue
+			}
 
-				for _, silenceNode := range silencerArray {
-					log.Infof("Silencing alerts for node %s", silenceNode.NodeID)
-					err = silence.SilenceAlerts(alertmanager, silenceMatchersJSON, silenceNode.NodeID, silenceNode.SilenceEnd)
+			alertmanager, err := silence.NewAlertmanagerClient(alertmanagerURL)
+			if err != nil {
+				log.WithError(err).Fatal("Failed to initialize Alertmanager client")
+			}
+
+			for event := range watcher.ResultChan() {
+				switch event.Type {
+				case watch.Added, watch.Modified:
+					ds := event.Object.(*v1.DaemonSet)
+					silencerArray, err := kured.ExtractNodeIDsFromAnnotation(ds, lockAnnotation, silenceDurationtime, nowProvider)
 					if err != nil {
-						log.Fatal(err)
+						log.WithError(err).Error("Failed to extract node IDs from DaemonSet annotation")
+						continue
 					}
+
+					for _, silenceNode := range silencerArray {
+						log.Infof("Silencing alerts for node %s", silenceNode.NodeID)
+						err = silence.SilenceAlerts(alertmanager, silenceMatchersJSON, silenceNode.NodeID, silenceNode.SilenceEnd)
+						if err != nil {
+							log.WithError(err).Errorf("Failed to silence alerts for node %s", silenceNode.NodeID)
+						}
+					}
+				case watch.Deleted:
+					log.Info("DaemonSet deleted")
+				case watch.Error:
+					log.WithError(err).Error("Error watching DaemonSet, restarting watch...")
 				}
-			case watch.Deleted:
-				log.Info("DaemonSet deleted")
-			case watch.Error:
-				log.Error("Error watching DaemonSet")
 			}
 		}
-		wg.Done()
 	}()
 
-	wg.Wait()
+	// Block forever to keep the service running
+	select {}
 }
