@@ -60,8 +60,8 @@ func NewAlertmanagerClient(alertmanagerURL string) (*client.AlertmanagerAPI, err
 	scheme := u.Scheme
 	host := u.Host
 
-	log.Infof("Alertmanager scheme: %s", scheme)
-	log.Infof("Alertmanager host: %s", host)
+	log.Debugf("Alertmanager scheme: %s", scheme)
+	log.Debugf("Alertmanager host: %s", host)
 	config := client.DefaultTransportConfig().WithSchemes([]string{scheme}).WithHost(host)
 
 	alertmanager := client.NewHTTPClientWithConfig(nil, config)
