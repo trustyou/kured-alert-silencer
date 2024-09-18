@@ -1,5 +1,5 @@
 # Release workflow
 
 ```bash
-.ci/release.sh vX.Y.Z
+.ci/release.sh X.Y.Z
 ```

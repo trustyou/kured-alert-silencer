@@ -2,8 +2,8 @@
 set -e
 
 print_help() {
-    echo "Usage: $0 v<MAJOR>.<MINOR>.<PATCH>"
-    echo "Example: $0 v1.2.3"
+    echo "Usage: $0 <MAJOR>.<MINOR>.<PATCH>"
+    echo "Example: $0 1.2.3"
     exit 1
 }
 
@@ -12,7 +12,7 @@ if [ -z "$1" ]; then
     print_help
 fi
 
-if [[ "$1" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Version is valid: $1"
 else
     echo "Error: Version format is incorrect."
@@ -22,6 +22,6 @@ fi
 VERSION=$1 make update-changelog
 
 git add .
-git commit -m "release: Version $1"
+git commit -m "release: Version v$1"
 
 echo "After merging the PR, tag and release are automatically done"
