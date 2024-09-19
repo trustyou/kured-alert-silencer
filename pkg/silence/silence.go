@@ -68,8 +68,8 @@ func NewAlertmanagerClient(alertmanagerURL string) (*client.AlertmanagerAPI, err
 	return alertmanager, nil
 }
 
-// Get silences from Alertmanager that match the given matcher
-func silenceExists(alertmanager *client.AlertmanagerAPI, matcher *models.Matcher) (bool, error) {
+// Get silences from Alertmanager that match the given matcher until the alertEnd time
+func silenceExistsUntil(alertmanager *client.AlertmanagerAPI, matcher *models.Matcher, alertEnd time.Time) (bool, error) {
 	getSilencesParams := silence.NewGetSilencesParams()
 	matchersStr := []string{fmt.Sprintf("%s=%s", *matcher.Name, *matcher.Value)}
 
@@ -78,7 +78,19 @@ func silenceExists(alertmanager *client.AlertmanagerAPI, matcher *models.Matcher
 		return true, err
 	}
 
-	return len(getSilencesResp.Payload) > 0, nil
+	if len(getSilencesResp.Payload) > 0 {
+		// check if ALL existing silences are still active
+		for _, tableSilence := range getSilencesResp.Payload {
+			if alertEnd.Before(time.Time(*tableSilence.Silence.EndsAt)) {
+				return false, nil
+			}
+		}
+		// all existing silences are expired
+		return true, nil
+
+	} else {
+		return false, nil
+	}
 }
 
 // SilenceAlerts silences alerts in Alertmanager
@@ -107,7 +119,7 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 			*matcher.Value,
 		)
 
-		exists, err := silenceExists(alertmanager, matcher)
+		exists, err := silenceExistsUntil(alertmanager, matcher, alertEnd)
 		if err != nil {
 			return err
 		}
