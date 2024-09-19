@@ -83,7 +83,7 @@ func TestNewAlertmanagerClient(t *testing.T) {
 	}
 }
 
-func TestSilenceExists(t *testing.T) {
+func TestSilenceExistsUntil(t *testing.T) {
 	existingSilences := []*models.GettableSilence{
 		{
 			Silence: models.Silence{
@@ -102,18 +102,28 @@ func TestSilenceExists(t *testing.T) {
 		name             string
 		existingSilences []*models.GettableSilence
 		matcher          *models.Matcher
+		alertEnd         time.Time
 		expectedExists   bool
 	}{
 		{
 			name:             "No Existing Silences",
 			existingSilences: []*models.GettableSilence{},
 			matcher:          &models.Matcher{Name: ptr.String("instance"), Value: ptr.String("node1")},
+			alertEnd:         time.Now(),
 			expectedExists:   false,
 		},
 		{
-			name:             "Existing Silences",
+			name:             "Existing Silences that expire before alertEnd",
 			existingSilences: existingSilences,
 			matcher:          &models.Matcher{Name: ptr.String("instance"), Value: ptr.String("node1")},
+			alertEnd:         time.Now(),
+			expectedExists:   false,
+		},
+		{
+			name:             "Existing Silences that expire after alertEnd",
+			existingSilences: existingSilences,
+			matcher:          &models.Matcher{Name: ptr.String("instance"), Value: ptr.String("node1")},
+			alertEnd:         time.Now().Add(2 * time.Hour),
 			expectedExists:   true,
 		},
 	}
@@ -126,7 +136,7 @@ func TestSilenceExists(t *testing.T) {
 			alertmanager, err := NewAlertmanagerClient(server.URL)
 			assert.NoError(t, err)
 
-			exists, err := silenceExists(alertmanager, tt.matcher)
+			exists, err := silenceExistsUntil(alertmanager, tt.matcher, tt.alertEnd)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.expectedExists, exists)
 		})
