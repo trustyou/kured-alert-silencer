@@ -63,7 +63,7 @@ test: lint
 	echo "Running go tests"
 	go test ./...
 
-.PHONY: kind
+.PHONY: e2e
 e2e: image manifest
 	kind create cluster --name $(KIND_CLUSTER_NAME) --config .github/kind-cluster-$(KUBERNETES_VERSION).yaml
 	helm repo add kubereboot https://kubereboot.github.io/charts
