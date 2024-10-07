@@ -93,7 +93,7 @@ func TestSilenceExistsUntil(t *testing.T) {
 				StartsAt:  (*strfmt.DateTime)(ptr.Time(time.Now().Add(-1 * time.Hour))),
 				EndsAt:    (*strfmt.DateTime)(ptr.Time(time.Now().Add(1 * time.Hour))),
 				CreatedBy: ptr.String("kured-alert-silencer"),
-				Comment:   ptr.String("Silencing during node reboot"),
+				Comment:   ptr.String("Silencing during node reboot: node1"),
 			},
 		},
 	}
@@ -153,7 +153,7 @@ func TestSilenceAlerts(t *testing.T) {
 				StartsAt:  (*strfmt.DateTime)(ptr.Time(time.Now().Add(-1 * time.Hour))),
 				EndsAt:    (*strfmt.DateTime)(ptr.Time(time.Now().Add(1 * time.Hour))),
 				CreatedBy: ptr.String("kured-alert-silencer"),
-				Comment:   ptr.String("Silencing during node reboot"),
+				Comment:   ptr.String("Silencing during node reboot: node1"),
 			},
 		},
 	}

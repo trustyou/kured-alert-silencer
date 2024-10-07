@@ -136,7 +136,7 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 					StartsAt:  startsAt,
 					EndsAt:    endsAt,
 					CreatedBy: ptr.String("kured-alert-silencer"),
-					Comment:   ptr.String("Silencing during node reboot"),
+					Comment:   ptr.String("Silencing during node reboot: " + nodeName),
 				},
 			},
 		)
