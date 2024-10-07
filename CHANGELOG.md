@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.0.8](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.8) - 2024-10-07
+
+### Added
+
+- Add node name to silencer comment
+
+### Fixed
+
+- Makefile phony
+
+### Build
+
+- deps: Update module github.com/aws/smithy-go to v1.21.0
+- deps: Update golang Docker tag to v1.23.2
+
+### Refactor
+
+- Start log messages with lowercase
+
 ## [v0.0.7](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.7) - 2024-09-19
 
 ### Fixed
