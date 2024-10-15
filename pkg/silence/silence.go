@@ -79,16 +79,16 @@ func silenceExistsUntil(alertmanager *client.AlertmanagerAPI, matcher *models.Ma
 	}
 
 	if len(getSilencesResp.Payload) > 0 {
-		// check if ALL existing silences are still active
+		// check if ALL existing silences are going to be still active
 		for _, tableSilence := range getSilencesResp.Payload {
 			log.Tracef("existing silence ends at: %s", tableSilence.Silence.EndsAt)
 			log.Tracef("expected silence ends at: %s", alertEnd)
 			if alertEnd.Before(time.Time(*tableSilence.Silence.EndsAt)) {
-				return false, nil
+				return true, nil
 			}
 		}
-		// all existing silences are expired
-		return true, nil
+		// all existing silences are going to be expired
+		return false, nil
 
 	} else {
 		return false, nil
