@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.0.9](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.9) - 2024-10-15
+
+### Added
+
+- Add traces for debugging not created silences
+
+### Fixed
+
+- silence: Detect when silence is expired
+
 ## [v0.0.8](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.8) - 2024-10-07
 
 ### Added
