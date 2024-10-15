@@ -9,7 +9,7 @@ COMMAND=$(cat <<EOF
 apt update > /dev/null 2>&1 &&
 apt install -y curl jq > /dev/null 2>&1 &&
 curl -s http://alertmanager.default:9093/api/v2/silences |
-jq '. | length'
+jq '[.[] | .matchers[].value] | unique | length'
 EOF
 )
 
