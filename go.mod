@@ -6,7 +6,7 @@ require (
 	github.com/aws/smithy-go v1.22.0
 	github.com/go-openapi/strfmt v0.23.0
 	github.com/prometheus/alertmanager v0.27.0
-	github.com/prometheus/common v0.60.0
+	github.com/prometheus/common v0.60.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
