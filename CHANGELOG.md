@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.0.10](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.10) - 2024-11-04
+
+### Fixed
+
+- silence: Remove newline from debug messages
+
+### Build
+
+- deps: Update module github.com/aws/smithy-go to v1.22.0
+- deps: Update module github.com/prometheus/common to v0.60.0
+- deps: Update kubernetes packages to v0.31.2
+- deps: Update module github.com/prometheus/common to v0.60.1
+
 ## [v0.0.9](https://github.com/trustyou/kured-alert-silencer/tree/v0.0.9) - 2024-10-15
 
 ### Added
