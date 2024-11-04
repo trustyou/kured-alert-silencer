@@ -127,7 +127,7 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 		}
 
 		if exists {
-			log.Debugf("silence already exists for matcher: %s=%s\n", *matcher.Name, *matcher.Value)
+			log.Debugf("silence already exists for matcher: %s=%s", *matcher.Name, *matcher.Value)
 			continue
 		}
 
@@ -148,7 +148,7 @@ func SilenceAlerts(alertmanager *client.AlertmanagerAPI, matchersJSON string, no
 			return err
 		}
 
-		log.Debugf("silence created for matcher: %s=%s\n", *matcher.Name, *matcher.Value)
+		log.Debugf("silence created for matcher: %s=%s", *matcher.Name, *matcher.Value)
 		log.Info("silence created successfully")
 	}
 	return nil
