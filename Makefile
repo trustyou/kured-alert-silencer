@@ -4,7 +4,7 @@ TEMPDIR = ./.tmp
 DH_ORG = trustyou
 VERSION ?= $(shell git rev-parse --short HEAD)
 SUDO = $(shell docker info >/dev/null 2>&1 || echo "sudo -E")
-KUBERNETES_VERSION = 1.28
+KUBERNETES_VERSION = 1.30
 KIND_CLUSTER_NAME = chart-testing
 
 .PHONY: all

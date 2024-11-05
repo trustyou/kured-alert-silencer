@@ -20,6 +20,8 @@ else
 fi
 
 VERSION=$1 make update-changelog
+sed -i "s#image: ghcr.io/(.*)/kured-alert-silencer.*#image: ghcr.io/\1/kured-alert-silencer:$1#g" \
+		install/kubernetes/deployment.yaml
 
 git add .
 git commit -m "release: Version v$1"

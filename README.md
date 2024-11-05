@@ -40,14 +40,14 @@ The following table lists the versions of `kured-alert-silencer`, Kured, and Kub
 
 | kured-alert-silencer | Kured  | Kubernetes |
 | -------------------- | ------ | ---------- |
-| 0.0.0                | 1.15.1 | 1.28, 1.29 |
+| 0.0.11               | 1.15.1 | 1.29, 1.30 |
 
 ## Configuration
 
 To view the available configuration parameters and usage instructions, run the following command:
 
 ```bash
-docker run --rm -i ghcr.io/trustyou/kured-alert-silencer:0.0.0 --help
+docker run --rm -i ghcr.io/trustyou/kured-alert-silencer:0.0.11 --help
 ```
 
 ## Future Enhancements
