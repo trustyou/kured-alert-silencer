@@ -70,9 +70,9 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - {kubernetes: "1.28", concurrency: 1}
+          - {kubernetes: "1.30", concurrency: 1}
           - {kubernetes: "1.29", concurrency: 1}
-          - {kubernetes: "1.28", concurrency: 2}
+          - {kubernetes: "1.30", concurrency: 2}
           - {kubernetes: "1.29", concurrency: 2}
     steps:
       - uses: actions/checkout@v4
