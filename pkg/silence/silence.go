@@ -79,11 +79,13 @@ func silenceExistsUntil(alertmanager *client.AlertmanagerAPI, matcher *models.Ma
 	}
 
 	if len(getSilencesResp.Payload) > 0 {
+		expectedTime := alertEnd.Truncate(time.Millisecond)
+		log.Tracef("expected silence ends at: %s", strfmt.DateTime(expectedTime))
 		// check if ALL existing silences are going to be still active
 		for _, tableSilence := range getSilencesResp.Payload {
 			log.Tracef("existing silence ends at: %s", tableSilence.Silence.EndsAt)
-			log.Tracef("expected silence ends at: %s", alertEnd)
-			if alertEnd.Before(time.Time(*tableSilence.Silence.EndsAt)) {
+			existingTime := time.Time(*tableSilence.Silence.EndsAt)
+			if expectedTime == existingTime || expectedTime.Before(existingTime) {
 				return true, nil
 			}
 		}
