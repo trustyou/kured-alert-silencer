@@ -126,7 +126,7 @@ jobs:
           helm install -n kube-system kured kubereboot/kured --set configuration.period=10s --set configuration.concurrency=${{ matrix.job.concurrency }}
 
       - name: Ensure kured is ready
-        uses: nick-invision/retry@v3.0.1
+        uses: nick-invision/retry@v3.0.2
         with:
           timeout_minutes: 10
           max_attempts: 10
