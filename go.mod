@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.4
 
 require (
-	github.com/aws/smithy-go v1.22.3
+	github.com/aws/smithy-go v1.22.4
 	github.com/go-openapi/strfmt v0.23.0
 	github.com/prometheus/alertmanager v0.28.1
 	github.com/prometheus/common v0.63.0
