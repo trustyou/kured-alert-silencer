@@ -4,7 +4,7 @@ TEMPDIR = ./.tmp
 DH_ORG = trustyou
 VERSION ?= $(shell git rev-parse --short HEAD)
 SUDO = $(shell docker info >/dev/null 2>&1 || echo "sudo -E")
-KUBERNETES_VERSION = 1.30
+KUBERNETES_VERSION = 1.33
 KIND_CLUSTER_NAME = chart-testing
 
 .PHONY: all
@@ -26,14 +26,14 @@ kured-alert-silencer:
 
 .PHONY: image
 image:
-	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
+	$(SUDO) docker build $(DOCKER_EXTRA_ARGS) \
 		--build-arg VERSION=$(VERSION) \
 		--load -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
 .PHONY: push-images
 push-images: DOCKER_EXTRA_ARGS ?= --platform linux/amd64,linux/arm64
 push-images:
-	$(SUDO) docker buildx build $(DOCKER_EXTRA_ARGS) \
+	$(SUDO) docker build $(DOCKER_EXTRA_ARGS) \
 		--build-arg VERSION=$(VERSION) \
 		--push -t ghcr.io/$(DH_ORG)/kured-alert-silencer:$(VERSION) .
 
