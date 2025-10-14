@@ -14,7 +14,7 @@ EOF
 )
 
 echo "Checking the number of silences in Alertmanager"
-output=$("$KUBECTL_CMD" run --rm -i --quiet --image debian:10.9-slim check-silences -- bash -c "$COMMAND")
+output=$("$KUBECTL_CMD" run --rm -i --quiet --image debian:stable-slim check-silences -- bash -c "$COMMAND")
 
 output_trimmed=$(echo "$output" | xargs)
 

@@ -17,7 +17,7 @@ spec:
         kubernetes.io/hostname: chart-testing-worker2
       containers:
         - name: alertmanager
-          image: prom/alertmanager:v0.27.0
+          image: prom/alertmanager:v0.28.1
           ports:
             - name: alertmanager
               containerPort: 9093
