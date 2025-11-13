@@ -1,6 +1,10 @@
 # kured-alert-silencer
 
-`kured-alert-silencer` is a tool designed to automatically silence alerts in Alertmanager during the reboot process of Kubernetes nodes managed by Kured. This ensures that the alerts triggered by node reboots do not create unnecessary noise in your monitoring system. It provides a configurable silence duration for each reboot event, and allows the use of Go templates for dynamic silence matchers.
+`kured-alert-silencer` is a tool designed to automatically silence alerts in Alertmanager during the
+reboot process of Kubernetes nodes managed by Kured. This ensures that the alerts triggered by node
+reboots do not create unnecessary noise in your monitoring system. It provides a configurable
+silence duration for each reboot event, and allows the use of Go templates for dynamic silence
+matchers.
 
 ## Features
 
@@ -13,22 +17,23 @@
 
 ### Prerequisites
 
-Before installing `kured-alert-silencer`, ensure that the following components are already installed in your Kubernetes cluster:
+Before installing `kured-alert-silencer`, ensure that the following components are already installed
+in your Kubernetes cluster:
 
 - Kured
 - Alertmanager
 
 ### Installation Steps
 
-1. **Apply RBAC Configuration**:
-   Apply the necessary RBAC configuration to grant `kured-alert-silencer` the required permissions.
+1. **Apply RBAC Configuration**: Apply the necessary RBAC configuration to grant
+   `kured-alert-silencer` the required permissions.
 
    ```bash
    kubectl apply -f install/kubernetes/rbac.yaml
    ```
 
-2. **Deploy kured-alert-silencer**:
-   Adjust the deployment parameters to match your cluster environment and apply the deployment configuration.
+2. **Deploy kured-alert-silencer**: Adjust the deployment parameters to match your cluster
+   environment and apply the deployment configuration.
 
    ```bash
    kubectl apply -f install/kubernetes/deployment.yaml
@@ -36,11 +41,13 @@ Before installing `kured-alert-silencer`, ensure that the following components a
 
 ## Compatibility
 
-The following table lists the versions of `kured-alert-silencer`, Kured, and Kubernetes that have been tested and verified to work together:
+The following table lists the versions of `kured-alert-silencer`, Kured, and Kubernetes that have
+been tested and verified to work together:
 
 | kured-alert-silencer | Kured  | Kubernetes |
 | -------------------- | ------ | ---------- |
 | 0.0.11               | 1.15.1 | 1.29, 1.30 |
+| 0.1.0                | 2.X    | 1.32, 1.33 |
 
 ## Configuration
 
@@ -56,4 +63,5 @@ docker run --rm -i ghcr.io/trustyou/kured-alert-silencer:0.0.11 --help
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on GitHub. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Please open an issue or submit a pull request on GitHub. For major
+changes, please open an issue first to discuss what you would like to change.
