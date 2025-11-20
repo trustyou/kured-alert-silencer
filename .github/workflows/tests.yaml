@@ -12,7 +12,7 @@ jobs:
     name: Lint golang code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Ensure go version
         uses: actions/setup-go@v6
         with:
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Ensure go version
         uses: actions/setup-go@v6
         with:
@@ -52,7 +52,7 @@ jobs:
     name: Lint bash code with shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Run ShellCheck
         uses: bewuethr/shellcheck-action@v2
 
@@ -75,7 +75,7 @@ jobs:
           - {kubernetes: "1.33", concurrency: 2}
           - {kubernetes: "1.32", concurrency: 2}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Ensure go version
         uses: actions/setup-go@v6
         with:
