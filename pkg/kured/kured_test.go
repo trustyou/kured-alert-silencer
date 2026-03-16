@@ -13,7 +13,7 @@ import (
 )
 
 func TestExtractNodeIDsFromAnnotation(t *testing.T) {
-	const KuredNodeLockAnnotation string = "weave.works/kured-node-lock"
+	const KuredNodeLockAnnotation string = "kured.dev/kured-node-lock"
 
 	fixedTime := time.Date(2024, time.May, 31, 6, 33, 0, 0, time.UTC)
 	timeProvider := func() time.Time {
