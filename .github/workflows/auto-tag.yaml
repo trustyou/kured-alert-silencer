@@ -5,14 +5,28 @@ on:
     branches:
       - main
 
+# The tag is pushed with a token of the org release GitHub App (secrets RELEASE_APP_CLIENT_ID and
+# RELEASE_APP_PRIVATE_KEY), not GITHUB_TOKEN: a tag pushed with GITHUB_TOKEN does not trigger the
+# "Release images" workflow, a tag pushed with an App installation token does.
+permissions:
+  contents: read
+
 jobs:
   tag:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Create release app token
+        id: app
+        uses: actions/create-github-app-token@v3
         with:
-          token: ${{ secrets.PAT }}
-        uses: actions/checkout@v6
+          client-id: ${{ secrets.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app.outputs.token }}
 
       - name: Get last changelog version
         id: changelog_reader
@@ -21,28 +35,31 @@ jobs:
           path: ./CHANGELOG.md
 
       - name: Check if tag exists
+        env:
+          TAG: ${{ steps.changelog_reader.outputs.version }}
         run: |
-          tag=${{ steps.changelog_reader.outputs.version }}
-          if git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG"; then
             echo "Tag already exists"
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+            echo "TAG_EXISTS=true" >> "$GITHUB_ENV"
           else
             echo "Tag does not exist"
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
+            echo "TAG_EXISTS=false" >> "$GITHUB_ENV"
           fi
 
-      - name: Import GPG key
-        if: env.TAG_EXISTS == 'false'
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-
+      # Annotated, unsigned tag authored by the app's bot identity.
       - name: Create new tag
         if: env.TAG_EXISTS == 'false'
+        env:
+          TAG: ${{ steps.changelog_reader.outputs.version }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
         run: |
-          tag=${{ steps.changelog_reader.outputs.version }}
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag -s "$tag" -m "$tag" --local-user $(gpg --list-keys --with-colons | grep '^pub' | cut -d':' -f5)
-          git push origin "$tag"
+          set -euo pipefail
+          user_id=$(curl -fsS \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/users/${APP_SLUG}%5Bbot%5D" | jq -r .id)
+          git config --global user.name "${APP_SLUG}[bot]"
+          git config --global user.email "${user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "$TAG"
+          git push origin "$TAG"
